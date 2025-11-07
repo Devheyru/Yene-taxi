@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "800047929275",
+    "project_id": "yene-taxi-41de2",
+    "storage_bucket": "yene-taxi-41de2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:800047929275:android:14982e2ecf2ef3e6c8569e",
+        "android_client_info": {
+          "package_name": "com.example.yene_taxi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "800047929275-fehvg6lohr63378s2fvsnpnsrn7b74p7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFzOJHfnwAvX3Xly2Vso8ur6F_S1lHr-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "800047929275-fehvg6lohr63378s2fvsnpnsrn7b74p7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "800047929275-ha1hhbdapvqom0ubhqc2gmiskhnputvp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.yeneTaxi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
