@@ -17,6 +17,11 @@ final openRidesProvider = StreamProvider<List<Ride>>((ref) {
   return repo.watchOpenRides();
 });
 
+final passengerActiveRideProvider = StreamProvider<Ride?>((ref) {
+  final repo = ref.watch(rideRepositoryProvider);
+  return repo.watchPassengerActiveRide();
+});
+
 class RideRepository {
   final FirebaseFirestore db;
   final fba.FirebaseAuth auth;
@@ -81,6 +86,44 @@ class RideRepository {
                         Ride.fromJson(d.data()..putIfAbsent('id', () => d.id)),
                   )
                   .toList(),
+        );
+  }
+
+  // Lifecycle transitions
+  Future<void> startTrip({required String rideId}) async {
+    await _col.doc(rideId).set({'status': 'onTrip'}, SetOptions(merge: true));
+  }
+
+  Future<void> completeRide({required String rideId}) async {
+    await _col.doc(rideId).set({
+      'status': 'completed',
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> cancelRide({required String rideId}) async {
+    await _col.doc(rideId).set({
+      'status': 'cancelled',
+    }, SetOptions(merge: true));
+  }
+
+  // Passenger: stream latest active ride (not completed/cancelled)
+  Stream<Ride?> watchPassengerActiveRide() {
+    final user = auth.currentUser;
+    if (user == null) return const Stream<Ride?>.empty();
+    return _col
+        .where('passengerId', isEqualTo: user.uid)
+        .where('status', whereIn: ['searching', 'assigned', 'onTrip'])
+        .orderBy('id')
+        .limit(1)
+        .snapshots()
+        .map(
+          (q) =>
+              q.docs.isEmpty
+                  ? null
+                  : Ride.fromJson(
+                    q.docs.first.data()
+                      ..putIfAbsent('id', () => q.docs.first.id),
+                  ),
         );
   }
 }

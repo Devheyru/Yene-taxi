@@ -5,54 +5,39 @@ import '../../core/services/auth_service.dart';
 
 /// RoleGate listens to the user document stream and redirects outside of build.
 /// This avoids build-context-after-async-gap lints and keeps build cheap.
-class RoleGate extends ConsumerStatefulWidget {
+class RoleGate extends ConsumerWidget {
   const RoleGate({super.key});
 
   @override
-  ConsumerState<RoleGate> createState() => _RoleGateState();
-}
-
-class _RoleGateState extends ConsumerState<RoleGate> {
-  @override
-  void initState() {
-    super.initState();
-    // Listen for user changes and navigate accordingly.
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Per Riverpod's constraint, call ref.listen inside build.
     ref.listen(userDocProvider, (previous, next) {
-      if (!mounted) return;
       next.when(
         data: (user) {
           final router = GoRouter.of(context);
-          String target;
-          if (user == null) {
-            target = '/sign-in';
-          } else {
-            target = switch (user.role) {
-              'passenger' => '/passenger',
-              'driver' => '/driver',
-              'admin' => '/admin',
-              _ => '/sign-in',
-            };
-          }
+          final target = switch (user?.role) {
+            null => '/sign-in',
+            'passenger' => '/passenger',
+            'driver' => '/driver',
+            'admin' => '/admin',
+            _ => '/sign-in',
+          };
+          // Avoid routing if already on target to reduce churn.
+          // GoRouter doesn't expose location here; navigate anyway since RoleGate is only at '/'.
           router.go(target);
         },
         error: (_, __) {},
         loading: () {},
       );
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
     final asyncUser = ref.watch(userDocProvider);
     return asyncUser.when(
       loading:
           () =>
               const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, st) => Scaffold(body: Center(child: Text('Error: $e'))),
-      data: (user) {
-        // Navigation handled by listener; render minimal placeholder.
-        return const SizedBox.shrink();
-      },
+      data: (_) => const SizedBox.shrink(),
     );
   }
 }

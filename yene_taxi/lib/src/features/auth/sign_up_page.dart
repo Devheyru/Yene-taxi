@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/auth_service.dart';
 
-class SignInPage extends ConsumerWidget {
-  const SignInPage({super.key});
+class SignUpPage extends ConsumerWidget {
+  const SignUpPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -13,13 +13,18 @@ class SignInPage extends ConsumerWidget {
     final repo = ref.watch(authRepositoryProvider);
     final loading = ValueNotifier(false);
 
-    Future<void> signInEmail() async {
+    Future<void> register() async {
       loading.value = true;
       try {
-        await repo.signInWithEmail(
+        await repo.registerWithEmail(
           email: emailCtrl.text.trim(),
           password: passCtrl.text,
         );
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Account created')));
+        }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(
@@ -31,26 +36,11 @@ class SignInPage extends ConsumerWidget {
       }
     }
 
-    Future<void> google() async {
-      loading.value = true;
-      try {
-        await repo.signInWithGoogle();
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Google error: $e')));
-        }
-      } finally {
-        loading.value = false;
-      }
-    }
-
     return ValueListenableBuilder<bool>(
       valueListenable: loading,
       builder: (context, busy, _) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Sign In')),
+          appBar: AppBar(title: const Text('Create Account')),
           body: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
@@ -58,7 +48,7 @@ class SignInPage extends ConsumerWidget {
                 padding: const EdgeInsets.all(20),
                 children: [
                   Text(
-                    'Welcome back',
+                    'Welcome to Yene-Taxi',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -83,19 +73,15 @@ class SignInPage extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: busy ? null : signInEmail,
-                    child: Text(busy ? 'Signing In...' : 'Sign In'),
-                  ),
-                  const SizedBox(height: 12),
-                  OutlinedButton(
-                    onPressed: busy ? null : google,
-                    child: const Text('Continue with Google'),
+                  ElevatedButton.icon(
+                    onPressed: busy ? null : register,
+                    icon: const Icon(Icons.person_add_alt_1),
+                    label: Text(busy ? 'Creating...' : 'Create Account'),
                   ),
                   const SizedBox(height: 12),
                   TextButton(
-                    onPressed: () => context.go('/sign-up'),
-                    child: const Text("Don't have an account? Sign Up"),
+                    onPressed: () => context.go('/sign-in'),
+                    child: const Text('Already have an account? Sign In'),
                   ),
                 ],
               ),
